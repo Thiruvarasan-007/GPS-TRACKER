@@ -1,0 +1,27 @@
+#include <TinyGPSPlus.h>
+TinyGPSPlus gps;
+HardwareSerial GPS_Serial(1);
+
+void setup() {
+  Serial.begin(115200);
+  GPS_Serial.begin(9600, SERIAL_8N1, 16, 17);  // RX=16, TX=17
+  Serial.println("Starting GPS test...");
+}
+
+void loop() {
+  while (GPS_Serial.available()) {
+    char c = GPS_Serial.read();
+    Serial.print(c);   // <-- Print raw GPS data (NMEA sentences)
+    gps.encode(c);
+  }
+
+  if (gps.location.isValid()) {
+    Serial.printf("Latitude: %.6f  Longitude: %.6f\n",
+                  gps.location.lat(),
+                  gps.location.lng());
+  } else {
+    Serial.println("No GPS fix yet...");
+  }
+
+  delay(1000);
+}
